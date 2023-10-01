@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <imago2.h>
+
+char *channel_extract(char* pixels, int size, int channel_number)
+{
+    char* monochrome = malloc(size*sizeof(char));
+    int index=0;
+    for(int x=0; x<size; x++){
+        unsigned char* pix = pixels + x*(3*sizeof(char));
+        char val = pix[channel_number];
+        
+
+        monochrome[index] = val;
+        index++;
+
+    }
+
+
+    return monochrome;
+}
+
+
+
+int main( int argc, char *argv[])
+{
+    assert(argc == 5);
+
+    char* input = argv[1];
+    char* outputR = argv[2];
+    char* outputG = argv[3];
+    char* outputB = argv[4];
+
+    int width, height;
+    unsigned char* image = img_load_pixels(input, &width, &height, IMG_FMT_RGB24);
+
+    unsigned char* monoR = channel_extract(image, width*height, 0);
+    unsigned char* monoG = channel_extract(image, width*height, 1);
+    unsigned char* monoB = channel_extract(image, width*height, 2);
+
+    img_save_pixels(outputR, monoR, width, height, IMG_FMT_GREY8);
+    img_save_pixels(outputG, monoG, width, height, IMG_FMT_GREY8);
+    img_save_pixels(outputB, monoB, width, height, IMG_FMT_GREY8);
+
+    free(monoR);
+    free(monoG);
+    free(monoB);
+
+    return 0;
+}
